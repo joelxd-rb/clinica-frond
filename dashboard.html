@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Clínica</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; }
+    nav { background: #1d4ed8; color: #fff; padding: .9rem 1.5rem;
+          display: flex; align-items: center; justify-content: space-between; }
+    nav h1 { font-size: 1.1rem; }
+    nav .info { font-size: .85rem; opacity: .9; }
+    nav button { background: rgba(255,255,255,.2); border: none; color: #fff;
+                 padding: .35rem .9rem; border-radius: 6px; cursor: pointer; font-size: .85rem; }
+    nav button:hover { background: rgba(255,255,255,.35); }
+    main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+    h2 { color: #1e293b; margin-bottom: 1.5rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; }
+    .card { background: #fff; border-radius: 12px; padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08); text-decoration: none;
+            color: inherit; display: block; transition: transform .15s, box-shadow .15s; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.13); }
+    .icon { font-size: 2.5rem; margin-bottom: .75rem; }
+    .card h3 { font-size: 1.05rem; color: #1e293b; margin-bottom: .35rem; }
+    .card p  { font-size: .82rem; color: #64748b; }
+    /* Módulo exclusivo Admin */
+    .admin-only { display: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>🏥 Clínica – Panel de Control</h1>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <span class="info" id="navInfo">Cargando...</span>
+      <button onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <main>
+    <h2 id="bienvenida">Cargando...</h2>
+    <div class="grid">
+
+      <!-- Módulo exclusivo para Administradores -->
+      <a class="card admin-only" href="doctores.html">
+        <div class="icon">👨‍⚕️</div>
+        <h3>Directorio Médico</h3>
+        <p>Gestiona doctores y especialidades</p>
+      </a>
+
+      <a class="card" href="pacientes.html">
+        <div class="icon">🧑‍🤝‍🧑</div>
+        <h3>Pacientes</h3>
+        <p>Registra, busca y edita expedientes</p>
+      </a>
+
+      <a class="card" href="citas.html">
+        <div class="icon">📅</div>
+        <h3>Agenda de Citas</h3>
+        <p>Programa y administra citas médicas</p>
+      </a>
+
+    </div>
+  </main>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/api.js"></script>
+
+  <script>
+    // ── Al cargar el dashboard, verificar que hay sesión activa ──────────────
+    requireAuth().then(async (usuario) => {
+      // Obtener los Custom Claims del token para saber el rol
+      // getIdTokenResult() retorna el token con todos sus claims decodificados
+      const tokenResult = await usuario.getIdTokenResult();
+      const rol       = tokenResult.claims.rol || "Usuario";
+      const email     = usuario.email;
+
+      // Actualizar el saludo y la barra de navegación
+      document.getElementById("bienvenida").textContent = `Bienvenido, ${email}`;
+      document.getElementById("navInfo").textContent    = `${email} (${rol})`;
+
+      // Mostrar el módulo de doctores SOLO si el usuario es Administrador
+      if (rol === "Admin") {
+        document.querySelectorAll(".admin-only").forEach(el => {
+          el.style.display = "block";
+        });
+      }
+    }).catch(() => {
+      // requireAuth ya redirige a /login.html si no hay sesión
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paciente – Clínica</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; }
+    nav { background: #1d4ed8; color: #fff; padding: .9rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    nav a { color:#fff; text-decoration:none; background:rgba(255,255,255,.15); padding:.3rem .75rem; border-radius:6px; font-size:.85rem; margin-left:.5rem; }
+    main { max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: #fff; border-radius: 12px; padding: 1.75rem; box-shadow: 0 2px 10px rgba(0,0,0,.08); margin-bottom: 1.5rem; }
+    .ficha-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; }
+    h2 { color: #1e293b; }
+    .sub { color: #64748b; font-size: .875rem; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:.75rem; }
+    .field label { font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; color:#6b7280; font-weight:700; }
+    .field p { color: #1e293b; margin-top:.15rem; }
+    h3 { color: #1e293b; margin-bottom: 1rem; }
+    /* Línea de tiempo */
+    .timeline-item { border-left: 3px solid #1d4ed8; padding: .85rem 1.25rem;
+                     margin-bottom: 1rem; background: #f8fafc; border-radius: 0 10px 10px 0; }
+    .fecha { font-size: .78rem; color: #6b7280; margin-bottom:.3rem; }
+    .dx { font-size: .98rem; font-weight:bold; color: #1e293b; margin-bottom:.3rem; }
+    .tto { font-size: .875rem; color: #374151; }
+    .tags { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.4rem; }
+    .tag { background:#e0e7ff; color:#3730a3; font-size:.75rem; padding:.15rem .5rem; border-radius:4px; }
+    .obs { color:#6b7280; font-style:italic; font-size:.84rem; margin-top:.3rem; }
+    /* Botón FAB-like */
+    .btn-consulta { background:#1d4ed8; color:#fff; padding:.6rem 1.2rem; border:none;
+                    border-radius:8px; cursor:pointer; font-weight:600; font-size:.9rem; }
+    /* Modal consulta */
+    .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:100; align-items:center; justify-content:center; }
+    .modal-backdrop.activo { display:flex; }
+    .modal { background:#fff; border-radius:14px; padding:2rem; width:520px; max-width:95vw; max-height:90vh; overflow-y:auto; }
+    .modal h3 { margin-bottom:1.25rem; }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+    label { display:block; font-size:.85rem; color:#374151; margin-bottom:.25rem; font-weight:500; }
+    input, select, textarea { width:100%; padding:.55rem .85rem; border:1px solid #d1d5db; border-radius:8px; font-size:.9rem; margin-bottom:.85rem; font-family:inherit; }
+    textarea { resize:vertical; min-height:70px; }
+    .actions { display:flex; gap:.75rem; }
+    .btn-cancel { flex:1; padding:.65rem; background:#f1f5f9; border:1px solid #d1d5db; border-radius:8px; cursor:pointer; font-weight:600; }
+    .btn-submit { flex:1; padding:.65rem; background:#1d4ed8; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; }
+    .error-msg { background:#fee2e2; color:#b91c1c; border-radius:8px; padding:.65rem 1rem; margin-bottom:1rem; font-size:.875rem; display:none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1 id="navTitulo" style="color:#fff;font-size:1rem">📋 Ficha del Paciente</h1>
+    <div><a href="pacientes.html">⬅ Pacientes</a><a href="#" onclick="cerrarSesion()">Salir</a></div>
+  </nav>
+
+  <main>
+    <!-- Ficha demográfica -->
+    <div class="card" id="fichaCard">
+      <div style="text-align:center;color:#94a3b8;padding:1.5rem">Cargando datos del paciente...</div>
+    </div>
+
+    <!-- Historial médico -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <h3>📜 Historial Médico</h3>
+        <button class="btn-consulta" onclick="abrirModalConsulta()">+ Registrar Consulta</button>
+      </div>
+      <div id="historialContainer"><p style="color:#94a3b8;text-align:center">Cargando historial...</p></div>
+    </div>
+  </main>
+
+  <!-- Modal: Registrar Consulta -->
+  <div class="modal-backdrop" id="modalConsulta">
+    <div class="modal">
+      <h3>🩺 Registrar Consulta</h3>
+      <div class="error-msg" id="errorConsulta"></div>
+      <form id="formConsulta">
+        <div class="grid2">
+          <div><label>Peso (kg)</label><input type="number" step="0.1" id="cPeso" placeholder="70.5"></div>
+          <div><label>Presión arterial</label><input type="text" id="cPresion" placeholder="120/80"></div>
+        </div>
+        <label>Diagnóstico *</label><textarea id="cDiagnostico" required rows="2" placeholder="Describe el diagnóstico..."></textarea>
+        <label>Tratamiento *</label><textarea id="cTratamiento" required rows="2" placeholder="Medicamentos, indicaciones..."></textarea>
+        <label>Observaciones</label><textarea id="cObservaciones" rows="2" placeholder="Notas adicionales (opcional)"></textarea>
+        <div class="actions">
+          <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-submit" id="btnConsulta">Guardar Consulta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    // Obtener el ID del paciente desde la URL (?id=...)
+    const params      = new URLSearchParams(window.location.search);
+    const idPaciente  = params.get("id");
+
+    if (!idPaciente) window.location.href = "/pacientes.html";
+
+    // ── Cargar datos al iniciar ──────────────────────────────────────────────
+    requireAuth().then(() => Promise.all([cargarPaciente(), cargarHistorial()]));
+
+    /** Carga y renderiza la ficha demográfica del paciente */
+    async function cargarPaciente() {
+      try {
+        const p = await apiGet(`/pacientes/${idPaciente}`);
+        document.getElementById("navTitulo").textContent = `📋 ${p.nombre} ${p.apellidos}`;
+        document.getElementById("fichaCard").innerHTML = `
+          <div class="ficha-header">
+            <div>
+              <h2>${p.nombre} ${p.apellidos}</h2>
+              <p class="sub">ID: ${p.id_paciente}</p>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="field"><label>Fecha de Nacimiento</label><p>${p.fecha_nacimiento || "—"}</p></div>
+            <div class="field"><label>Sexo</label><p>${p.sexo || "—"}</p></div>
+            <div class="field"><label>Teléfono</label><p>${p.telefono || "—"}</p></div>
+            <div class="field"><label>Dirección</label><p>${p.direccion || "—"}</p></div>
+          </div>`;
+      } catch (e) {
+        document.getElementById("fichaCard").innerHTML = `<p style="color:red">Error: ${e.message}</p>`;
+      }
+    }
+
+    /** Carga y renderiza la línea de tiempo médica del paciente (más reciente primero) */
+    async function cargarHistorial() {
+      const container = document.getElementById("historialContainer");
+      try {
+        const historial = await apiGet(`/historial/paciente/${idPaciente}`);
+
+        if (!historial.length) {
+          container.innerHTML = `<p style="color:#94a3b8;text-align:center;padding:1rem">Sin registros médicos aún</p>`;
+          return;
+        }
+
+        // Renderizar cada registro como un elemento de la línea de tiempo
+        container.innerHTML = historial.map(h => `
+          <div class="timeline-item">
+            <div class="fecha">📅 ${new Date(h.fecha_consulta).toLocaleString("es-MX", {dateStyle:"long", timeStyle:"short"})}</div>
+            <div class="dx">🩺 ${h.diagnostico}</div>
+            <div class="tto"><strong>Tratamiento:</strong> ${h.tratamiento}</div>
+            <div class="tags">
+              ${h.peso_kg   ? `<span class="tag">⚖️ ${h.peso_kg} kg</span>` : ""}
+              ${h.presion_arterial ? `<span class="tag">💉 PA: ${h.presion_arterial}</span>` : ""}
+              ${h.id_cita   ? `<span class="tag">📋 Cita vinculada</span>` : ""}
+            </div>
+            ${h.observaciones ? `<div class="obs">💬 ${h.observaciones}</div>` : ""}
+          </div>`).join("");
+      } catch (e) {
+        container.innerHTML = `<p style="color:red">Error al cargar historial: ${e.message}</p>`;
+      }
+    }
+
+    // ── Modal de consulta ────────────────────────────────────────────────────
+    function abrirModalConsulta() { document.getElementById("modalConsulta").classList.add("activo"); }
+    function cerrarModal()        { document.getElementById("modalConsulta").classList.remove("activo"); }
+
+    document.getElementById("formConsulta").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errDiv = document.getElementById("errorConsulta");
+      const btn    = document.getElementById("btnConsulta");
+      errDiv.style.display = "none";
+      btn.disabled = true; btn.textContent = "Guardando...";
+
+      const body = {
+        id_paciente:     idPaciente,
+        peso_kg:         document.getElementById("cPeso").value         || null,
+        presion_arterial: document.getElementById("cPresion").value     || null,
+        diagnostico:     document.getElementById("cDiagnostico").value,
+        tratamiento:     document.getElementById("cTratamiento").value,
+        observaciones:   document.getElementById("cObservaciones").value || null,
+      };
+
+      try {
+        // Registrar la consulta en la API (solo Doctores pueden hacer esto)
+        await apiPost("/historial", body);
+        cerrarModal();
+        document.getElementById("formConsulta").reset();
+        cargarHistorial(); // Recargar la línea de tiempo para mostrar el nuevo registro
+      } catch (err) {
+        errDiv.textContent = "⚠️ " + err.message;
+        errDiv.style.display = "block";
+      } finally {
+        btn.disabled = false; btn.textContent = "Guardar Consulta";
+      }
+    });
+  </script>
+</body>
+</html>
