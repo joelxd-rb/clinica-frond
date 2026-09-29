@@ -108,7 +108,7 @@
           <div class="ficha-header">
             <div>
               <h2>${p.nombre} ${p.apellidos}</h2>
-              <p class="sub">ID: ${p.id_paciente}</p>
+              <p class="sub">ID: ${p.id}</p>
             </div>
           </div>
           <div class="grid">
@@ -142,7 +142,7 @@
             <div class="tags">
               ${h.peso_kg   ? `<span class="tag">⚖️ ${h.peso_kg} kg</span>` : ""}
               ${h.presion_arterial ? `<span class="tag">💉 PA: ${h.presion_arterial}</span>` : ""}
-              ${h.id_cita   ? `<span class="tag">📋 Cita vinculada</span>` : ""}
+              ${h.id   ? `<span class="tag">📋 Cita vinculada</span>` : ""}
             </div>
             ${h.observaciones ? `<div class="obs">💬 ${h.observaciones}</div>` : ""}
           </div>`).join("");

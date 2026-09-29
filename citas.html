@@ -138,12 +138,12 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${hora}</td>
-          <td><a href="paciente-detalle.html?id=${c.id_paciente}">#${c.id_paciente}</a></td>
+          <td><a href="paciente-detalle.html?id=${c.id}">#${c.id}</a></td>
           <td style="font-size:.8rem">${c.id_doctor.substring(0,8)}…</td>
           <td>${c.motivo}</td>
           <td><span class="estado ${estadoClass}">${c.estado}</span></td>
           <td>
-            <select class="estado-sel" onchange="cambiarEstado('${c.id_cita}', this.value)">
+            <select class="estado-sel" onchange="cambiarEstado('${c.id}', this.value)">
               <option ${c.estado==="Pendiente" ?"selected":""}>Pendiente</option>
               <option ${c.estado==="En Curso"  ?"selected":""}>En Curso</option>
               <option ${c.estado==="Completada"?"selected":""}>Completada</option>
@@ -161,7 +161,7 @@
      */
     async function cambiarEstado(idCita, nuevoEstado) {
       try {
-        await apiPatch(`/citas/${idCita}`, { estado: nuevoEstado });
+        await apiPatch(`/citas/${idCita}/estado`, { estado: nuevoEstado });
         cargarCitas(); // Recargar para reflejar el cambio
       } catch (e) { alert("Error: " + e.message); }
     }
@@ -179,7 +179,7 @@
         const selDoc = document.getElementById("cDoctor");
 
         selPac.innerHTML = `<option value="">— Seleccionar paciente —</option>` +
-          pacientes.map(p => `<option value="${p.id_paciente}">${p.nombre} ${p.apellidos}</option>`).join("");
+          pacientes.map(p => `<option value="${p.id}">${p.nombre} ${p.apellidos}</option>`).join("");
 
         selDoc.innerHTML = `<option value="">— Seleccionar médico —</option>` +
           doctores.map(d => `<option value="${d.uid}">${d.nombre} ${d.apellidos} – ${d.especialidad || "General"}</option>`).join("");

@@ -148,12 +148,12 @@
       pacientes.forEach(p => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><a href="paciente-detalle.html?id=${p.id_paciente}">${p.nombre} ${p.apellidos}</a></td>
+          <td><a href="paciente-detalle.html?id=${p.id}">${p.nombre} ${p.apellidos}</a></td>
           <td>${p.fecha_nacimiento || "—"}</td>
           <td>${p.sexo || "—"}</td>
           <td>${p.telefono || "—"}</td>
           <td>
-            <a href="paciente-detalle.html?id=${p.id_paciente}">Ver</a> &nbsp;|&nbsp;
+            <a href="paciente-detalle.html?id=${p.id}">Ver</a> &nbsp;|&nbsp;
             <a href="#" onclick="abrirEdicion(${JSON.stringify(p).replace(/"/g, '&quot;')})">Editar</a>
           </td>`;
         tbody.appendChild(tr);
@@ -170,7 +170,7 @@
 
     /** Abre el modal en modo edición con los datos del paciente seleccionado */
     function abrirEdicion(p) {
-      document.getElementById("pacienteId").value  = p.id_paciente;
+      document.getElementById("pacienteId").value  = p.id;
       document.getElementById("modalTitulo").textContent = "✏️ Editar Paciente";
       document.getElementById("fNombre").value      = p.nombre;
       document.getElementById("fApellidos").value   = p.apellidos;

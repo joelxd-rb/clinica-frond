@@ -83,7 +83,7 @@
 
     // Si ya hay una sesión activa (token válido en localStorage), redirigir
     if (estaAutenticado()) {
-      window.location.href = "/dashboard.html";
+      window.location.href = "dashboard.html";
     }
 
     // Manejar el envío del formulario de login
@@ -104,7 +104,7 @@
 
         // Redirigir al dashboard según el rol del usuario
         const claims = decodificarToken();
-        window.location.href = "/dashboard.html";
+        window.location.href = "dashboard.html";
 
       } catch (error) {
         // Mostrar el mensaje de error retornado por la API
