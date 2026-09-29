@@ -3,50 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Doctores – Clínica</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; }
-    nav { background: #1d4ed8; color: #fff; padding: .9rem 1.5rem;
-          display: flex; align-items: center; justify-content: space-between; }
-    nav a { color:#fff; text-decoration:none; background:rgba(255,255,255,.15);
-            padding:.3rem .75rem; border-radius:6px; font-size:.85rem; margin-left:.5rem; }
-    main { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
-    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; }
-    h2 { color: #1e293b; }
-    .btn-primary { background:#1d4ed8; color:#fff; padding:.55rem 1.2rem;
-                   border-radius:8px; border:none; cursor:pointer; font-weight:600; font-size:.9rem; }
-    /* Modal de nuevo doctor */
-    .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:100; align-items:center; justify-content:center; }
-    .modal-backdrop.activo { display:flex; }
-    .modal { background:#fff; border-radius:14px; padding:2rem; width:480px; max-width:95vw;
-             max-height:90vh; overflow-y:auto; }
-    .modal h3 { color:#1e293b; margin-bottom:1.25rem; }
-    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
-    label { display:block; font-size:.85rem; color:#374151; margin-bottom:.25rem; font-weight:500; }
-    input { width:100%; padding:.55rem .85rem; border:1px solid #d1d5db;
-            border-radius:8px; font-size:.9rem; margin-bottom:.85rem; }
-    input:focus { outline:none; border-color:#1d4ed8; }
-    .actions { display:flex; gap:.75rem; margin-top:.5rem; }
-    .btn-cancel { flex:1; padding:.65rem; background:#f1f5f9; border:1px solid #d1d5db;
-                  border-radius:8px; cursor:pointer; font-weight:600; }
-    .btn-submit { flex:1; padding:.65rem; background:#1d4ed8; color:#fff;
-                  border:none; border-radius:8px; cursor:pointer; font-weight:600; }
-    .error-msg { background:#fee2e2; color:#b91c1c; border-radius:8px;
-                 padding:.65rem 1rem; margin-bottom:1rem; font-size:.875rem; display:none; }
-    /* Tabla */
-    table { width:100%; border-collapse:collapse; background:#fff; border-radius:10px;
-            overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); }
-    th { background:#1d4ed8; color:#fff; padding:.75rem 1rem; text-align:left; font-size:.85rem; }
-    td { padding:.7rem 1rem; border-bottom:1px solid #e2e8f0; font-size:.9rem; color:#374151; }
-    tr:last-child td { border-bottom:none; }
-    .badge { padding:.2rem .6rem; border-radius:20px; font-size:.75rem; font-weight:600; }
-    .activo  { background:#dcfce7; color:#166534; }
-    .inactivo { background:#fee2e2; color:#991b1b; }
-    .btn-toggle { font-size:.8rem; padding:.3rem .7rem; border:none; border-radius:6px; cursor:pointer; }
-    .btn-susp { background:#fef3c7; color:#92400e; }
-    .btn-act  { background:#dcfce7; color:#166534; }
-    #cargando { text-align:center; padding:2rem; color:#94a3b8; }
-  </style>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <nav>
@@ -60,13 +17,18 @@
       <button class="btn-primary" onclick="abrirModal()">+ Nuevo Doctor</button>
     </div>
 
-    <div id="cargando">Cargando lista de doctores...</div>
-    <table id="tablaWrap" style="display:none">
-      <thead>
-        <tr><th>Nombre</th><th>Especialidad</th><th>Cédula</th><th>Teléfono</th><th>Estado</th><th>Acción</th></tr>
-      </thead>
-      <tbody id="tablaCuerpo"></tbody>
-    </table>
+    <div id="cargando">
+      <div class="skeleton skeleton-row" style="height:40px; margin-bottom:1rem;"></div>
+      <div class="skeleton skeleton-row" style="height:40px; margin-bottom:1rem;"></div>
+    </div>
+    <div class="table-container" id="tablaWrap" style="display:none">
+      <table>
+        <thead>
+          <tr><th>Nombre</th><th>Especialidad</th><th>Cédula</th><th>Teléfono</th><th>Estado</th><th>Acción</th></tr>
+        </thead>
+        <tbody id="tablaCuerpo"></tbody>
+      </table>
+    </div>
   </main>
 
   <!-- Modal: Nuevo Doctor -->
@@ -137,14 +99,23 @@
           <td>${d.cedula_profesional || "—"}</td>
           <td>${d.telefono || "—"}</td>
           <td><span class="badge ${d.activo ? "activo" : "inactivo"}">${d.activo ? "Activo" : "Inactivo"}</span></td>
-          <td>
-            <button class="btn-toggle ${d.activo ? "btn-susp" : "btn-act"}"
+          <td style="display:flex;gap:0.5rem;align-items:center;">
+            <button class="btn-cancel ${d.activo ? "btn-susp" : "btn-act"}" style="padding:0.3rem 0.6rem; margin:0;"
               onclick="toggleEstado('${d.uid}', ${!d.activo})">
               ${d.activo ? "Suspender" : "Activar"}
             </button>
+            <button class="btn-danger" style="padding:0.3rem 0.6rem; margin:0;" onclick="eliminarDoctor('${d.uid}')">Eliminar</button>
           </td>`;
         tbody.appendChild(tr);
       });
+    }
+
+    async function eliminarDoctor(uid) {
+      if (!confirm("¿Seguro que deseas eliminar este doctor permanentemente? Se eliminarán todas sus citas e historiales (si aplica).")) return;
+      try {
+        await apiDelete(`/doctores/${uid}`);
+        cargarDoctores();
+      } catch (e) { alert("Error: " + e.message); }
     }
 
     /**
@@ -191,3 +162,4 @@
   </script>
 </body>
 </html>
+

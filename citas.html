@@ -3,42 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agenda – Clínica</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; }
-    nav { background: #1d4ed8; color: #fff; padding: .9rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
-    nav a { color:#fff; text-decoration:none; background:rgba(255,255,255,.15); padding:.3rem .75rem; border-radius:6px; font-size:.85rem; margin-left:.5rem; }
-    main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
-    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:.75rem; }
-    h2 { color: #1e293b; }
-    .controls { display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; }
-    .controls input[type=date] { padding:.5rem .85rem; border:1px solid #d1d5db; border-radius:8px; font-size:.9rem; }
-    .btn-primary { background:#1d4ed8; color:#fff; padding:.55rem 1.1rem; border-radius:8px; border:none; cursor:pointer; font-weight:600; font-size:.9rem; }
-    table { width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); }
-    th { background:#1d4ed8; color:#fff; padding:.75rem 1rem; text-align:left; font-size:.85rem; }
-    td { padding:.7rem 1rem; border-bottom:1px solid #e2e8f0; font-size:.875rem; color:#374151; vertical-align:middle; }
-    tr:last-child td { border-bottom:none; }
-    td a { color:#1d4ed8; text-decoration:none; font-weight:500; }
-    .estado { padding:.2rem .65rem; border-radius:20px; font-size:.75rem; font-weight:700; }
-    .Pendiente  { background:#fef3c7; color:#92400e; }
-    .En-Curso   { background:#dbeafe; color:#1e40af; }
-    .Completada { background:#dcfce7; color:#166534; }
-    .Cancelada  { background:#fee2e2; color:#991b1b; }
-    select.estado-sel { padding:.3rem .5rem; border:1px solid #d1d5db; border-radius:6px; font-size:.8rem; cursor:pointer; }
-    /* Modal nueva cita */
-    .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:100; align-items:center; justify-content:center; }
-    .modal-backdrop.activo { display:flex; }
-    .modal { background:#fff; border-radius:14px; padding:2rem; width:480px; max-width:95vw; max-height:90vh; overflow-y:auto; }
-    .modal h3 { margin-bottom:1.25rem; }
-    label { display:block; font-size:.85rem; color:#374151; margin-bottom:.25rem; font-weight:500; }
-    input, select, textarea { width:100%; padding:.55rem .85rem; border:1px solid #d1d5db; border-radius:8px; font-size:.9rem; margin-bottom:.85rem; font-family:inherit; }
-    textarea { resize:vertical; min-height:70px; }
-    .actions { display:flex; gap:.75rem; }
-    .btn-cancel { flex:1; padding:.65rem; background:#f1f5f9; border:1px solid #d1d5db; border-radius:8px; cursor:pointer; font-weight:600; }
-    .btn-submit { flex:1; padding:.65rem; background:#1d4ed8; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; }
-    .error-msg { background:#fee2e2; color:#b91c1c; border-radius:8px; padding:.65rem 1rem; margin-bottom:1rem; font-size:.875rem; display:none; }
-    #cargando { text-align:center; padding:2rem; color:#94a3b8; }
-  </style>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <nav>
@@ -56,13 +21,18 @@
       </div>
     </div>
 
-    <div id="cargando">Cargando agenda...</div>
-    <table id="tablaWrap" style="display:none">
-      <thead>
-        <tr><th>Hora</th><th>Paciente</th><th>Doctor UID</th><th>Motivo</th><th>Estado</th><th>Cambiar</th></tr>
-      </thead>
+    <div id="cargando">
+      <div class="skeleton skeleton-row" style="height:40px; margin-bottom:1rem;"></div>
+      <div class="skeleton skeleton-row" style="height:40px; margin-bottom:1rem;"></div>
+    </div>
+    <div class="table-container" id="tablaWrap" style="display:none">
+      <table>
+        <thead>
+          <tr><th>Hora</th><th>Paciente</th><th>Doctor UID</th><th>Motivo</th><th>Estado</th><th>Acción</th></tr>
+        </thead>
       <tbody id="tablaCuerpo"></tbody>
-    </table>
+      </table>
+    </div>
   </main>
 
   <!-- Modal: Nueva Cita -->
@@ -142,13 +112,13 @@
           <td style="font-size:.8rem">${c.id_doctor.substring(0,8)}…</td>
           <td>${c.motivo}</td>
           <td><span class="estado ${estadoClass}">${c.estado}</span></td>
-          <td>
-            <select class="estado-sel" onchange="cambiarEstado('${c.id}', this.value)">
-              <option ${c.estado==="Pendiente" ?"selected":""}>Pendiente</option>
-              <option ${c.estado==="En Curso"  ?"selected":""}>En Curso</option>
-              <option ${c.estado==="Completada"?"selected":""}>Completada</option>
-              <option ${c.estado==="Cancelada" ?"selected":""}>Cancelada</option>
+          <td style="display:flex;gap:0.5rem;align-items:center;">
+            <select class="estado-sel" onchange="cambiarEstado('${c.id}', this.value.toLowerCase())">
+              <option value="pendiente" ${c.estado==="pendiente" ?"selected":""}>Pendiente</option>
+              <option value="completada" ${c.estado==="completada"?"selected":""}>Completada</option>
+              <option value="cancelada" ${c.estado==="cancelada" ?"selected":""}>Cancelada</option>
             </select>
+            <button class="btn-danger" onclick="eliminarCita('${c.id}')">Eliminar</button>
           </td>`;
         tbody.appendChild(tr);
       });
@@ -163,6 +133,14 @@
       try {
         await apiPatch(`/citas/${idCita}/estado`, { estado: nuevoEstado });
         cargarCitas(); // Recargar para reflejar el cambio
+      } catch (e) { alert("Error: " + e.message); }
+    }
+
+    async function eliminarCita(idCita) {
+      if (!confirm("¿Seguro que deseas eliminar esta cita permanentemente?")) return;
+      try {
+        await apiDelete(`/citas/${idCita}`);
+        cargarCitas();
       } catch (e) { alert("Error: " + e.message); }
     }
 
@@ -221,3 +199,4 @@
   </script>
 </body>
 </html>
+
