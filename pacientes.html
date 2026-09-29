@@ -1,67 +1,99 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pacientes – Clínica</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directorio de Pacientes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <nav>
-    <h1 style="color:#fff;font-size:1rem">🧑‍🤝‍🧑 Pacientes</h1>
-    <div><a href="dashboard.html">⬅ Dashboard</a><a href="#" onclick="cerrarSesion()">Salir</a></div>
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="#">🧑‍🤝‍🧑 Directorio de Pacientes</a>
+      <div class="d-flex align-items-center gap-3">
+        <a href="dashboard.html" class="btn btn-outline-light btn-sm fw-bold">⬅ Dashboard</a>
+        <button class="btn btn-light btn-sm fw-bold" onclick="cerrarSesion()">Salir</button>
+      </div>
+    </div>
   </nav>
 
-  <main>
-    <div class="header">
-      <h2>Directorio de Pacientes</h2>
-      <div class="controls">
-        <input class="search-input" id="inputBusqueda" type="text" placeholder="Buscar por nombre, teléfono o ID…">
-        <button class="btn-primary" onclick="buscar()">🔍</button>
-        <button class="btn-primary" onclick="abrirModal()">+ Nuevo</button>
+  <main class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+      <div class="d-flex gap-2 w-50">
+        <input type="text" id="busqueda" class="form-control" placeholder="Buscar por nombre, teléfono..." onkeyup="if(event.key==='Enter') buscarPaciente()">
+        <button class="btn btn-secondary fw-bold px-4" onclick="buscarPaciente()">🔍</button>
       </div>
+      <button class="btn btn-primary fw-bold" onclick="abrirModal()">+ Nuevo Paciente</button>
     </div>
 
     <div id="cargando">
-      <div class="skeleton skeleton-row" style="height:40px; margin-bottom:1rem;"></div>
-      <div class="skeleton skeleton-row" style="height:40px; margin-bottom:1rem;"></div>
+      <div class="skeleton skeleton-row"></div>
+      <div class="skeleton skeleton-row"></div>
+      <div class="skeleton skeleton-row"></div>
     </div>
+
     <div class="table-container" id="tablaWrap" style="display:none">
-      <table>
-        <thead>
-          <tr><th>Nombre</th><th>Fecha Nac.</th><th>Sexo</th><th>Teléfono</th><th>Acciones</th></tr>
-        </thead>
-        <tbody id="tablaCuerpo"></tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Fecha Nac.</th>
+              <th>Sexo</th>
+              <th>Teléfono</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaCuerpo"></tbody>
+        </table>
+      </div>
     </div>
   </main>
 
-  <!-- Modal: Nuevo / Editar Paciente -->
+  <!-- Modal -->
   <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal">
-      <h3 id="modalTitulo">➕ Nuevo Paciente</h3>
-      <div class="error-msg" id="errorModal"></div>
+    <div class="modal card p-4 shadow-lg border-0" style="max-width: 600px; width: 100%;">
+      <h3 class="fw-bold mb-4" id="modalTitulo">➕ Nuevo Paciente</h3>
+      <div class="alert alert-danger d-none" id="errorModal"></div>
       <form id="formPaciente">
         <input type="hidden" id="pacienteId">
-        <div class="grid2">
-          <div><label>Nombre(s)</label><input type="text" id="fNombre" required></div>
-          <div><label>Apellidos</label><input type="text" id="fApellidos" required></div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Nombre</label>
+            <input type="text" id="fNombre" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Apellidos</label>
+            <input type="text" id="fApellidos" class="form-control" required>
+          </div>
         </div>
-        <div class="grid2">
-          <div><label>Fecha de Nacimiento</label><input type="date" id="fFechaNac" required></div>
-          <div><label>Sexo</label>
-            <select id="fSexo">
-              <option value="">— Seleccionar —</option>
-              <option value="M">Masculino</option>
-              <option value="F">Femenino</option>
-              <option value="Otro">Otro</option>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Fecha de Nacimiento</label>
+            <input type="date" id="fFechaNac" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Sexo</label>
+            <select id="fSexo" class="form-select">
+              <option value="">(No especificado)</option>
+              <option>Femenino</option>
+              <option>Masculino</option>
+              <option>Otro</option>
             </select>
           </div>
         </div>
-        <label>Teléfono</label><input type="tel" id="fTelefono">
-        <label>Dirección</label><textarea id="fDireccion"></textarea>
-        <div class="actions">
-          <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-          <button type="submit" class="btn-submit" id="btnGuardar">Guardar</button>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Teléfono</label>
+          <input type="tel" id="fTelefono" class="form-control">
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-bold">Dirección Completa</label>
+          <textarea id="fDireccion" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-secondary w-50 fw-bold" onclick="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary w-50 fw-bold" id="btnGuardar">Guardar</button>
         </div>
       </form>
     </div>
@@ -70,60 +102,52 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/api.js"></script>
   <script>
-    // ── Inicialización: verificar sesión y cargar pacientes ──────────────────
     if (!estaAutenticado()) { window.location.href = "index.html"; } else { cargarTodos(); }
 
-    /** Carga todos los pacientes sin filtro */
     async function cargarTodos() {
+      document.getElementById("cargando").style.display = "block";
+      document.getElementById("tablaWrap").style.display = "none";
       try {
-        const data = await apiGet("/pacientes");
-        renderizarTabla(data);
-      } catch (e) {
-        document.getElementById("cargando").textContent = "Error: " + e.message;
-      }
+        const pacientes = await apiGet("/pacientes");
+        renderizarTabla(pacientes);
+      } catch (e) { document.getElementById("cargando").innerHTML = `<div class="alert alert-danger">${e.message}</div>`; }
     }
 
-    /** Busca pacientes por el texto del input */
-    async function buscar() {
-      const q = document.getElementById("inputBusqueda").value.trim();
+    async function buscarPaciente() {
+      const q = document.getElementById("busqueda").value.trim();
       if (!q) return cargarTodos();
+      document.getElementById("cargando").style.display = "block";
+      document.getElementById("tablaWrap").style.display = "none";
       try {
-        const data = await apiGet(`/pacientes/buscar?q=${encodeURIComponent(q)}`);
-        renderizarTabla(data);
-      } catch (e) { alert("Error: " + e.message); }
+        const pacientes = await apiGet(`/pacientes?buscar=${encodeURIComponent(q)}`);
+        renderizarTabla(pacientes);
+      } catch (e) { document.getElementById("cargando").innerHTML = `<div class="alert alert-danger">${e.message}</div>`; }
     }
 
-    // Buscar también al presionar Enter
-    document.getElementById("inputBusqueda").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") buscar();
-    });
-
-    /**
-     * Renderiza la tabla de pacientes.
-     * @param {Array} pacientes
-     */
     function renderizarTabla(pacientes) {
       document.getElementById("cargando").style.display = "none";
-      document.getElementById("tablaWrap").style.display = "table";
+      document.getElementById("tablaWrap").style.display = "block";
       const tbody = document.getElementById("tablaCuerpo");
       tbody.innerHTML = "";
 
       if (!pacientes.length) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#94a3b8">Sin resultados</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Sin resultados</td></tr>`;
         return;
       }
 
       pacientes.forEach(p => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><a href="paciente-detalle.html?id=${p.id}">${p.nombre} ${p.apellidos}</a></td>
+          <td class="fw-bold"><a href="paciente-detalle.html?id=${p.id}" class="text-primary text-decoration-none">${p.nombre} ${p.apellidos}</a></td>
           <td>${p.fecha_nacimiento || "—"}</td>
           <td>${p.sexo || "—"}</td>
           <td>${p.telefono || "—"}</td>
-          <td style="display:flex;gap:0.5rem;align-items:center;">
-            <a href="paciente-detalle.html?id=${p.id}" class="btn-primary" style="padding:0.3rem 0.6rem; color:white; text-decoration:none;">Ver</a>
-            <button class="btn-cancel" style="padding:0.3rem 0.6rem; margin:0;" onclick="abrirEdicion(${JSON.stringify(p).replace(/"/g, '&quot;')})">Editar</button>
-            <button class="btn-danger" style="padding:0.3rem 0.6rem; margin:0;" onclick="eliminarPaciente('${p.id}')">Eliminar</button>
+          <td>
+            <div class="d-flex gap-2">
+              <a href="paciente-detalle.html?id=${p.id}" class="btn btn-sm btn-primary fw-bold">Ver</a>
+              <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="abrirEdicion(${JSON.stringify(p).replace(/"/g, '&quot;')})">Editar</button>
+              <button class="btn btn-sm btn-danger fw-bold" onclick="eliminarPaciente('${p.id}')">Eliminar</button>
+            </div>
           </td>`;
         tbody.appendChild(tr);
       });
@@ -137,7 +161,6 @@
       } catch (e) { alert("Error: " + e.message); }
     }
 
-    // ── Modal ────────────────────────────────────────────────────────────────
     function abrirModal() {
       document.getElementById("pacienteId").value = "";
       document.getElementById("modalTitulo").textContent = "➕ Nuevo Paciente";
@@ -145,16 +168,15 @@
       document.getElementById("modalBackdrop").classList.add("activo");
     }
 
-    /** Abre el modal en modo edición con los datos del paciente seleccionado */
     function abrirEdicion(p) {
-      document.getElementById("pacienteId").value  = p.id;
+      document.getElementById("pacienteId").value = p.id;
       document.getElementById("modalTitulo").textContent = "✏️ Editar Paciente";
-      document.getElementById("fNombre").value      = p.nombre;
-      document.getElementById("fApellidos").value   = p.apellidos;
-      document.getElementById("fFechaNac").value    = p.fecha_nacimiento;
-      document.getElementById("fSexo").value        = p.sexo || "";
-      document.getElementById("fTelefono").value    = p.telefono || "";
-      document.getElementById("fDireccion").value   = p.direccion || "";
+      document.getElementById("fNombre").value = p.nombre;
+      document.getElementById("fApellidos").value = p.apellidos;
+      document.getElementById("fFechaNac").value = p.fecha_nacimiento;
+      document.getElementById("fSexo").value = p.sexo || "";
+      document.getElementById("fTelefono").value = p.telefono || "";
+      document.getElementById("fDireccion").value = p.direccion || "";
       document.getElementById("modalBackdrop").classList.add("activo");
     }
 
@@ -163,33 +185,28 @@
     document.getElementById("formPaciente").addEventListener("submit", async (e) => {
       e.preventDefault();
       const errDiv = document.getElementById("errorModal");
-      const btn    = document.getElementById("btnGuardar");
-      errDiv.style.display = "none";
+      const btn = document.getElementById("btnGuardar");
+      errDiv.classList.add("d-none");
       btn.disabled = true; btn.textContent = "Guardando...";
 
-      const id   = document.getElementById("pacienteId").value;
+      const id = document.getElementById("pacienteId").value;
       const body = {
-        nombre:           document.getElementById("fNombre").value,
-        apellidos:        document.getElementById("fApellidos").value,
+        nombre: document.getElementById("fNombre").value,
+        apellidos: document.getElementById("fApellidos").value,
         fecha_nacimiento: document.getElementById("fFechaNac").value,
-        sexo:             document.getElementById("fSexo").value || null,
-        telefono:         document.getElementById("fTelefono").value || null,
-        direccion:        document.getElementById("fDireccion").value || null,
+        sexo: document.getElementById("fSexo").value || null,
+        telefono: document.getElementById("fTelefono").value || null,
+        direccion: document.getElementById("fDireccion").value || null,
       };
 
       try {
-        if (id) {
-          // Edición: PUT al endpoint con el ID del paciente
-          await apiPut(`/pacientes/${id}`, body);
-        } else {
-          // Creación: POST al endpoint de pacientes
-          await apiPost("/pacientes", body);
-        }
+        if (id) await apiPut(`/pacientes/${id}`, body);
+        else await apiPost("/pacientes", body);
         cerrarModal();
         cargarTodos();
       } catch (err) {
-        errDiv.textContent = "⚠️ " + err.message;
-        errDiv.style.display = "block";
+        errDiv.textContent = err.message;
+        errDiv.classList.remove("d-none");
       } finally {
         btn.disabled = false; btn.textContent = "Guardar";
       }
@@ -197,4 +214,3 @@
   </script>
 </body>
 </html>
-

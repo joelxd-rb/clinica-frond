@@ -1,61 +1,83 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agenda – Clínica</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <nav>
-    <h1 style="color:#fff;font-size:1rem">📅 Agenda Médica</h1>
-    <div><a href="dashboard.html">⬅ Dashboard</a><a href="#" onclick="cerrarSesion()">Salir</a></div>
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="#">📅 Agenda Médica</a>
+      <div class="d-flex align-items-center gap-3">
+        <a href="dashboard.html" class="btn btn-outline-light btn-sm fw-bold">⬅ Dashboard</a>
+        <button class="btn btn-light btn-sm fw-bold" onclick="cerrarSesion()">Salir</button>
+      </div>
+    </div>
   </nav>
 
-  <main>
-    <div class="header">
-      <h2 id="tituloDia">Citas del día</h2>
-      <div class="controls">
-        <input type="date" id="inputFecha">
-        <button class="btn-primary" onclick="cargarCitas()">Filtrar</button>
-        <button class="btn-primary" onclick="abrirModal()">+ Nueva Cita</button>
+  <main class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+      <h2 id="tituloDia" class="fw-bold text-primary mb-0">Citas del día</h2>
+      <div class="d-flex gap-2 align-items-center">
+        <input type="date" id="inputFecha" class="form-control" style="width: auto;">
+        <button class="btn btn-secondary fw-bold" onclick="cargarCitas()">Filtrar</button>
+        <button class="btn btn-primary fw-bold" onclick="abrirModal()">+ Nueva Cita</button>
       </div>
     </div>
 
     <div id="cargando">
-      <div class="skeleton skeleton-row" style="height:40px; margin-bottom:1rem;"></div>
-      <div class="skeleton skeleton-row" style="height:40px; margin-bottom:1rem;"></div>
+      <div class="skeleton skeleton-row"></div>
+      <div class="skeleton skeleton-row"></div>
+      <div class="skeleton skeleton-row"></div>
     </div>
+
     <div class="table-container" id="tablaWrap" style="display:none">
-      <table>
-        <thead>
-          <tr><th>Hora</th><th>Paciente</th><th>Doctor UID</th><th>Motivo</th><th>Estado</th><th>Acción</th></tr>
-        </thead>
-      <tbody id="tablaCuerpo"></tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Hora</th>
+              <th>Paciente ID</th>
+              <th>Doctor UID</th>
+              <th>Motivo</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaCuerpo"></tbody>
+        </table>
+      </div>
     </div>
   </main>
 
-  <!-- Modal: Nueva Cita -->
+  <!-- Modal -->
   <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal">
-      <h3>➕ Nueva Cita</h3>
-      <div class="error-msg" id="errorModal"></div>
+    <div class="modal card p-4 shadow-lg border-0" style="max-width: 500px; width: 100%;">
+      <h3 class="fw-bold mb-4">➕ Nueva Cita</h3>
+      <div class="alert alert-danger d-none" id="errorModal"></div>
       <form id="formCita">
-        <label>Paciente</label>
-        <select id="cPaciente" required>
-          <option value="">— Cargando pacientes... —</option>
-        </select>
-        <label>Médico</label>
-        <select id="cDoctor" required>
-          <option value="">— Cargando médicos... —</option>
-        </select>
-        <label>Fecha y Hora</label>
-        <input type="datetime-local" id="cFechaHora" required>
-        <label>Motivo de la cita</label>
-        <textarea id="cMotivo" required placeholder="Describe el motivo de la consulta..."></textarea>
-        <div class="actions">
-          <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-          <button type="submit" class="btn-submit" id="btnGuardar">Crear Cita</button>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Paciente</label>
+          <select id="cPaciente" class="form-select" required><option value="">— Cargando... —</option></select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Médico</label>
+          <select id="cDoctor" class="form-select" required><option value="">— Cargando... —</option></select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Fecha y Hora</label>
+          <input type="datetime-local" id="cFechaHora" class="form-control" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-bold">Motivo de la cita</label>
+          <textarea id="cMotivo" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-secondary w-50 fw-bold" onclick="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary w-50 fw-bold" id="btnGuardar">Crear Cita</button>
         </div>
       </form>
     </div>
@@ -64,14 +86,11 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/api.js"></script>
   <script>
-    // Establecer fecha de hoy en el input al cargar
     const hoy = new Date().toISOString().split("T")[0];
     document.getElementById("inputFecha").value = hoy;
 
-    // ── Inicializar: verificar sesión y cargar citas ──────────────────────────
     if (!estaAutenticado()) { window.location.href = "index.html"; } else { cargarCitas(); }
 
-    /** Carga las citas del día seleccionado en el input de fecha */
     async function cargarCitas() {
       const fecha = document.getElementById("inputFecha").value || hoy;
       document.getElementById("tituloDia").textContent = `Citas del ${fecha}`;
@@ -79,60 +98,57 @@
       document.getElementById("tablaWrap").style.display = "none";
 
       try {
-        // Llamar a la API con el filtro de fecha
         const citas = await apiGet(`/citas?fecha=${fecha}`);
         renderizarTabla(citas);
       } catch (e) {
-        document.getElementById("cargando").textContent = "Error: " + e.message;
+        document.getElementById("cargando").innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
       }
     }
 
-    /**
-     * Renderiza la tabla de citas.
-     * @param {Array} citas
-     */
     function renderizarTabla(citas) {
       document.getElementById("cargando").style.display = "none";
-      document.getElementById("tablaWrap").style.display = "table";
+      document.getElementById("tablaWrap").style.display = "block";
       const tbody = document.getElementById("tablaCuerpo");
       tbody.innerHTML = "";
 
       if (!citas.length) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#94a3b8">Sin citas para esta fecha 🎉</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">Sin citas para esta fecha 🎉</td></tr>`;
         return;
       }
 
       citas.forEach(c => {
         const hora = new Date(c.fecha_hora).toLocaleTimeString("es-MX", {hour:"2-digit", minute:"2-digit"});
-        const estadoClass = c.estado.replace(" ", "-");
         const tr = document.createElement("tr");
+        
+        // Colores Bootstrap según estado
+        let colorClass = "bg-warning text-dark";
+        if (c.estado === 'completada') colorClass = "bg-success text-white";
+        if (c.estado === 'cancelada') colorClass = "bg-danger text-white";
+
         tr.innerHTML = `
-          <td>${hora}</td>
-          <td><a href="paciente-detalle.html?id=${c.id}">#${c.id}</a></td>
-          <td style="font-size:.8rem">${c.id_doctor.substring(0,8)}…</td>
+          <td class="fw-bold">${hora}</td>
+          <td><a href="paciente-detalle.html?id=${c.id}" class="text-primary text-decoration-none fw-bold">#${c.id.substring(0,8)}</a></td>
+          <td class="small text-muted">${c.id_doctor.substring(0,8)}…</td>
           <td>${c.motivo}</td>
-          <td><span class="estado ${estadoClass}">${c.estado}</span></td>
-          <td style="display:flex;gap:0.5rem;align-items:center;">
-            <select class="estado-sel" onchange="cambiarEstado('${c.id}', this.value.toLowerCase())">
-              <option value="pendiente" ${c.estado==="pendiente" ?"selected":""}>Pendiente</option>
-              <option value="completada" ${c.estado==="completada"?"selected":""}>Completada</option>
-              <option value="cancelada" ${c.estado==="cancelada" ?"selected":""}>Cancelada</option>
-            </select>
-            <button class="btn-danger" onclick="eliminarCita('${c.id}')">Eliminar</button>
+          <td><span class="badge ${colorClass} rounded-pill px-3 py-2 text-capitalize">${c.estado}</span></td>
+          <td>
+            <div class="d-flex gap-2">
+              <select class="form-select form-select-sm" style="width: auto;" onchange="cambiarEstado('${c.id}', this.value.toLowerCase())">
+                <option value="pendiente" ${c.estado==="pendiente" ?"selected":""}>Pendiente</option>
+                <option value="completada" ${c.estado==="completada"?"selected":""}>Completada</option>
+                <option value="cancelada" ${c.estado==="cancelada" ?"selected":""}>Cancelada</option>
+              </select>
+              <button class="btn btn-sm btn-danger fw-bold" onclick="eliminarCita('${c.id}')">Eliminar</button>
+            </div>
           </td>`;
         tbody.appendChild(tr);
       });
     }
 
-    /**
-     * Actualiza el estado de una cita directamente desde el selector de la tabla.
-     * @param {string} idCita
-     * @param {string} nuevoEstado
-     */
     async function cambiarEstado(idCita, nuevoEstado) {
       try {
         await apiPatch(`/citas/${idCita}/estado`, { estado: nuevoEstado });
-        cargarCitas(); // Recargar para reflejar el cambio
+        cargarCitas();
       } catch (e) { alert("Error: " + e.message); }
     }
 
@@ -144,25 +160,14 @@
       } catch (e) { alert("Error: " + e.message); }
     }
 
-    // ── Modal nueva cita ─────────────────────────────────────────────────────
     async function abrirModal() {
-      // Cargar listas de pacientes y doctores para los selectores
       try {
-        const [pacientes, doctores] = await Promise.all([
-          apiGet("/pacientes"),
-          apiGet("/doctores"),
-        ]);
-
+        const [pacientes, doctores] = await Promise.all([apiGet("/pacientes"), apiGet("/doctores")]);
         const selPac = document.getElementById("cPaciente");
         const selDoc = document.getElementById("cDoctor");
-
-        selPac.innerHTML = `<option value="">— Seleccionar paciente —</option>` +
-          pacientes.map(p => `<option value="${p.id}">${p.nombre} ${p.apellidos}</option>`).join("");
-
-        selDoc.innerHTML = `<option value="">— Seleccionar médico —</option>` +
-          doctores.map(d => `<option value="${d.uid}">${d.nombre} ${d.apellidos} – ${d.especialidad || "General"}</option>`).join("");
-      } catch (e) { console.error("Error cargando selectors:", e); }
-
+        selPac.innerHTML = `<option value="">— Seleccionar paciente —</option>` + pacientes.map(p => `<option value="${p.id}">${p.nombre} ${p.apellidos}</option>`).join("");
+        selDoc.innerHTML = `<option value="">— Seleccionar médico —</option>` + doctores.map(d => `<option value="${d.uid}">${d.nombre} ${d.apellidos} – ${d.especialidad || "General"}</option>`).join("");
+      } catch (e) {}
       document.getElementById("modalBackdrop").classList.add("activo");
     }
 
@@ -171,27 +176,23 @@
     document.getElementById("formCita").addEventListener("submit", async (e) => {
       e.preventDefault();
       const errDiv = document.getElementById("errorModal");
-      const btn    = document.getElementById("btnGuardar");
-      errDiv.style.display = "none";
+      const btn = document.getElementById("btnGuardar");
+      errDiv.classList.add("d-none");
       btn.disabled = true; btn.textContent = "Creando...";
 
-      const body = {
-        id_paciente: document.getElementById("cPaciente").value,
-        id_doctor:   document.getElementById("cDoctor").value,
-        // Convertir datetime-local a ISO 8601 que entiende la API
-        fecha_hora:  new Date(document.getElementById("cFechaHora").value).toISOString(),
-        motivo:      document.getElementById("cMotivo").value,
-      };
-
       try {
-        await apiPost("/citas", body);
+        await apiPost("/citas", {
+          id_paciente: document.getElementById("cPaciente").value,
+          id_doctor: document.getElementById("cDoctor").value,
+          fecha_hora: new Date(document.getElementById("cFechaHora").value).toISOString(),
+          motivo: document.getElementById("cMotivo").value,
+        });
         cerrarModal();
         document.getElementById("formCita").reset();
-        cargarCitas(); // Refrescar la agenda
+        cargarCitas();
       } catch (err) {
-        // Si hay colisión de horario, el backend responde 409 con mensaje claro
         errDiv.textContent = "⚠️ " + err.message;
-        errDiv.style.display = "block";
+        errDiv.classList.remove("d-none");
       } finally {
         btn.disabled = false; btn.textContent = "Crear Cita";
       }
@@ -199,4 +200,3 @@
   </script>
 </body>
 </html>
-

@@ -3,95 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar Sesión – Clínica</title>
+  <title>Login – Clínica</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 450px;
+      padding: 3rem;
+    }
+  </style>
 </head>
 <body>
-
-  <!-- ── Tarjeta de login ─────────────────────────────────────── -->
-  <div class="card">
-    <div class="logo">
-      <h1>🏥 Clínica</h1>
-      <p>Sistema de Gestión Médica</p>
+  <div class="card login-card text-center">
+    <div class="mb-4">
+      <img src="img/logo.jpg" alt="Logo Clínica" class="rounded-circle shadow-sm" width="100" height="100" style="object-fit:cover">
     </div>
-
-    <!-- Mensaje de error (oculto por defecto) -->
-    <div class="error" id="msgError"></div>
+    <h2 class="fw-bold mb-4 text-primary">Acceso al Sistema</h2>
+    
+    <div id="errorMsg" class="alert alert-danger d-none" role="alert"></div>
 
     <form id="formLogin">
-      <label for="email">Correo electrónico</label>
-      <input type="email" id="email" placeholder="admin@clinica.com" required autofocus>
-
-      <label for="password">Contraseña</label>
-      <input type="password" id="password" placeholder="••••••••" required>
-
-      <button type="submit" id="btnLogin">Iniciar Sesión</button>
+      <div class="mb-3 text-start">
+        <label class="form-label fw-bold">Correo electrónico</label>
+        <input type="email" id="email" class="form-control form-control-lg" required>
+      </div>
+      <div class="mb-4 text-start">
+        <label class="form-label fw-bold">Contraseña</label>
+        <input type="password" id="password" class="form-control form-control-lg" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg w-100" id="btnSubmit">
+        Iniciar sesión
+      </button>
     </form>
   </div>
 
-  <!-- Configuración de URL de la API (sin Firebase) -->
   <script src="js/firebase-config.js"></script>
-  <!-- Helper de peticiones HTTP con JWT -->
   <script src="js/api.js"></script>
-
   <script>
-    // ── Lógica del formulario de login ─────────────────────────────────────
-
-    const formLogin = document.getElementById("formLogin");
-    const btnLogin  = document.getElementById("btnLogin");
-    const msgError  = document.getElementById("msgError");
-
-    /**
-     * Muestra un mensaje de error en el formulario.
-     * @param {string} texto - Mensaje a mostrar
-     */
-    function mostrarError(texto) {
-      msgError.textContent = "⚠️ " + texto;
-      msgError.style.display = "block";
-    }
-
-    /**
-     * Activa o desactiva el estado de carga del botón.
-     * @param {boolean} cargando - true = mostrando spinner
-     */
-    function setCargando(cargando) {
-      btnLogin.disabled = cargando;
-      btnLogin.textContent = cargando ? "Iniciando sesión..." : "Iniciar Sesión";
-      msgError.style.display = "none";
-    }
-
-    // Si ya hay una sesión activa (token válido en localStorage), redirigir
     if (estaAutenticado()) {
       window.location.href = "dashboard.html";
     }
 
-    // Manejar el envío del formulario de login
+    const formLogin = document.getElementById("formLogin");
+    const btnSubmit = document.getElementById("btnSubmit");
+    const errorMsg  = document.getElementById("errorMsg");
+
     formLogin.addEventListener("submit", async (e) => {
       e.preventDefault();
-      setCargando(true);
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = "Cargando...";
+      errorMsg.classList.add("d-none");
 
-      const email    = document.getElementById("email").value.trim();
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
       try {
-        // Llamar al endpoint POST /api/auth/login de nuestra API en Render
-        // El servidor valida las credenciales y retorna un JWT si son correctas
         const respuesta = await apiPost("/auth/login", { email, password });
-
-        // Guardar el JWT recibido en localStorage para usarlo en futuras peticiones
         guardarToken(respuesta.token);
-
-        // Redirigir al dashboard según el rol del usuario
-        const claims = decodificarToken();
         window.location.href = "dashboard.html";
-
       } catch (error) {
-        // Mostrar el mensaje de error retornado por la API
-        mostrarError(error.message || "Credenciales incorrectas");
-        setCargando(false);
+        errorMsg.textContent = error.message;
+        errorMsg.classList.remove("d-none");
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "Iniciar sesión";
       }
     });
   </script>
 </body>
 </html>
-
