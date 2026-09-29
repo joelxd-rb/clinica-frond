@@ -103,7 +103,7 @@
   <script src="js/api.js"></script>
   <script>
     // ── Inicialización: verificar sesión y cargar pacientes ──────────────────
-    requireAuth().then(() => cargarTodos());
+    if (!estaAutenticado()) { window.location.href = "index.html"; } else { cargarTodos(); }
 
     /** Carga todos los pacientes sin filtro */
     async function cargarTodos() {

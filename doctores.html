@@ -100,7 +100,7 @@
   <script src="js/api.js"></script>
   <script>
     // ── Cargar lista de doctores al iniciar ──────────────────────────────────
-    requireAuth().then(() => cargarDoctores());
+    if (!estaAutenticado()) { window.location.href = "index.html"; } else { cargarDoctores(); }
 
     /**
      * Obtiene y renderiza la lista de doctores activos desde la API.

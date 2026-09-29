@@ -99,7 +99,7 @@
     document.getElementById("inputFecha").value = hoy;
 
     // ── Inicializar: verificar sesión y cargar citas ──────────────────────────
-    requireAuth().then(() => cargarCitas());
+    if (!estaAutenticado()) { window.location.href = "index.html"; } else { cargarCitas(); }
 
     /** Carga las citas del día seleccionado en el input de fecha */
     async function cargarCitas() {

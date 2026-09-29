@@ -33,6 +33,14 @@ function eliminarToken() {
 }
 
 /**
+ * Función global para cerrar sesión y redirigir al login.
+ */
+function cerrarSesion() {
+  eliminarToken();
+  window.location.href = "index.html";
+}
+
+/**
  * Decodifica el payload del JWT sin verificar la firma.
  * Sirve para leer el rol y uid del usuario actual en el frontend.
  * @returns {object|null} El payload decodificado, o null si no hay token

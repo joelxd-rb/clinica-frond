@@ -97,7 +97,7 @@
     if (!idPaciente) window.location.href = "/pacientes.html";
 
     // ── Cargar datos al iniciar ──────────────────────────────────────────────
-    requireAuth().then(() => Promise.all([cargarPaciente(), cargarHistorial()]));
+    if (!estaAutenticado()) { window.location.href = "index.html"; } else { Promise.all([cargarPaciente(), cargarHistorial()]); }
 
     /** Carga y renderiza la ficha demográfica del paciente */
     async function cargarPaciente() {

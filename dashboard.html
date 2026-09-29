@@ -67,12 +67,12 @@
 
   <script>
     // ── Al cargar el dashboard, verificar que hay sesión activa ──────────────
-    requireAuth().then(async (usuario) => {
-      // Obtener los Custom Claims del token para saber el rol
-      // getIdTokenResult() retorna el token con todos sus claims decodificados
-      const tokenResult = await usuario.getIdTokenResult();
-      const rol       = tokenResult.claims.rol || "Usuario";
-      const email     = usuario.email;
+    if (!estaAutenticado()) {
+      window.location.href = "index.html";
+    } else {
+      const claims = decodificarToken();
+      const rol = claims.rol || "Usuario";
+      const email = claims.email || "Usuario";
 
       // Actualizar el saludo y la barra de navegación
       document.getElementById("bienvenida").textContent = `Bienvenido, ${email}`;
@@ -84,9 +84,12 @@
           el.style.display = "block";
         });
       }
-    }).catch(() => {
-      // requireAuth ya redirige a /login.html si no hay sesión
-    });
+    }
+
+    function cerrarSesion() {
+      eliminarToken();
+      window.location.href = "index.html";
+    }
   </script>
 </body>
 </html>
