@@ -68,3 +68,24 @@ body::before {
   background: #0d6efd !important;
 }
 .navbar-brand { font-weight: bold; font-size: 1.4rem; }
+
+/* Modales personalizados para evitar conflicto con Bootstrap */
+.custom-backdrop { 
+  display: none; 
+  position: fixed; 
+  inset: 0; 
+  background: rgba(15,23,42,0.6); 
+  z-index: 2000; 
+  align-items: center; 
+  justify-content: center; 
+  backdrop-filter: blur(4px); 
+}
+.custom-backdrop.activo { display: flex; animation: fadeIn 0.2s ease-out; }
+.custom-modal { 
+  background: white; 
+  border-radius: 16px; 
+  transform: translateY(0); 
+  animation: slideUp 0.3s ease-out; 
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
