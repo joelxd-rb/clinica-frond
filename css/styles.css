@@ -1,79 +1,175 @@
-/* Estilos adicionales y Marca de Agua sobre Bootstrap 5 */
-body {
-  background-color: #f4f7f6;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  position: relative;
-  min-height: 100vh;
+/* ==========================================================================
+   TEMA GLOBAL MÉDICO - CLÍNICA
+   Paleta: Verde Teal / Menta / Verde Oscuro
+   ========================================================================== */
+
+/* Variables de Color para usar en la app */
+:root {
+  --color-mint-bg: #e6f7f5;
+  --color-teal-light: #14b8a6;
+  --color-teal-medium: #0d9488;
+  --color-teal-dark: #0f766e;
+  --color-green-dark: #115e59;
+  
+  /* Sobrescribir el color primario global de Bootstrap */
+  --bs-primary: #0d9488 !important;
+  --bs-primary-rgb: 13, 148, 136 !important;
 }
 
-/* Estilos generales limpios */
+/* ── ESTILOS BASE ── */
 body {
-  background-color: #f0fdf4; /* Un verde menta muy suave y médico */
+  background-color: var(--color-mint-bg);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   min-height: 100vh;
+  color: #334155;
 }
 
-/* Tarjetas más grandes y con sombra suave */
-.card {
+/* ── SOBREESCRIBIR COLORES DE BOOTSTRAP (Primary) ── */
+
+/* Textos principales (Títulos) */
+.text-primary {
+  color: var(--color-green-dark) !important;
+}
+
+/* Enlaces (ej. nombres de pacientes en las tablas) */
+a.text-primary {
+  color: var(--color-teal-medium) !important;
+  transition: color 0.2s;
+}
+a.text-primary:hover {
+  color: var(--color-teal-light) !important;
+}
+
+/* Botones Principales (btn-primary) */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-teal-medium) 0%, var(--color-teal-light) 100%) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 30px !important; /* Más redondeado y moderno */
+  padding: 0.5rem 1.2rem !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(20, 184, 166, 0.3) !important;
+}
+
+/* Botones Secundarios outline */
+.btn-outline-primary {
+  color: var(--color-teal-medium) !important;
+  border-color: var(--color-teal-medium) !important;
+  border-radius: 30px !important;
+}
+.btn-outline-primary:hover {
+  background-color: var(--color-teal-medium) !important;
+  color: white !important;
+}
+
+/* ── NAVBAR ── */
+.navbar {
+  background: linear-gradient(135deg, var(--color-teal-light) 0%, var(--color-teal-dark) 100%) !important;
+  box-shadow: 0 4px 15px rgba(15, 118, 110, 0.2);
+  border-bottom: none;
+}
+.navbar-brand { 
+  font-weight: 800; 
+  font-size: 1.5rem; 
+  letter-spacing: 0.5px;
+}
+
+/* ── TARJETAS Y CONTENEDORES ── */
+.card, .table-container {
   border: none;
   border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.04);
   background: #ffffff;
+  overflow: hidden;
 }
 
-/* Tablas */
-.table-container {
-  background: white;
-  border-radius: 15px;
-  padding: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+/* Hover para tarjetas interactivas (ej. Dashboard) */
+.card[role="button"] {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+}
+.card[role="button"]:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 40px rgba(20, 184, 166, 0.15);
+  border: 1px solid var(--color-mint-bg);
 }
 
-/* Estados */
-.badge-estado {
+/* Inputs de formularios dentro del sistema */
+.form-control, .form-select {
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  padding: 0.6rem 1rem;
+  background-color: #f8fafc;
+  transition: all 0.3s;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--color-teal-light);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+}
+
+/* Encabezados de Tablas */
+.table-light th {
+  background-color: #f1f5f9;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
   font-size: 0.85rem;
-  padding: 0.4em 0.8em;
+  letter-spacing: 0.5px;
+  border-bottom: none;
+}
+
+/* ── ESTADOS Y BADGES ── */
+.badge {
+  font-size: 0.85rem;
+  padding: 0.5em 1em;
   border-radius: 20px;
-  text-transform: capitalize;
+  font-weight: 600;
 }
+.bg-success { background-color: #059669 !important; }
+.bg-warning { background-color: #fbbf24 !important; color: #78350f !important; }
+.bg-danger { background-color: #e11d48 !important; }
+.bg-secondary { background-color: #64748b !important; }
 
-/* Esqueletos */
-.skeleton {
-  background: #e9ecef;
-  border-radius: 4px;
-  animation: pulse 1.5s infinite;
-}
-.skeleton-row { height: 40px; margin-bottom: 1rem; width: 100%; }
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.4; }
-  100% { opacity: 1; }
-}
-
-/* Navbar */
-.navbar {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  background: #0d6efd !important;
-}
-.navbar-brand { font-weight: bold; font-size: 1.4rem; }
-
-/* Modales personalizados para evitar conflicto con Bootstrap */
+/* ── MODALES CUSTOM ── */
 .custom-backdrop { 
   display: none; 
   position: fixed; 
   inset: 0; 
-  background: rgba(15,23,42,0.6); 
+  background: rgba(15, 23, 42, 0.6); 
   z-index: 2000; 
   align-items: center; 
   justify-content: center; 
   backdrop-filter: blur(4px); 
 }
 .custom-backdrop.activo { display: flex; animation: fadeIn 0.2s ease-out; }
+
 .custom-modal { 
   background: white; 
-  border-radius: 16px; 
+  border-radius: 24px; /* Más redondeado haciendo juego con el login */
   transform: translateY(0); 
   animation: slideUp 0.3s ease-out; 
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: none;
 }
+
+/* ── ANIMACIONES GLOBALES ── */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── ESQUELETOS DE CARGA ── */
+.skeleton {
+  background: #e2e8f0;
+  border-radius: 8px;
+  animation: pulse 1.5s infinite;
+}
+.skeleton-row { height: 40px; margin-bottom: 1rem; width: 100%; }
+.skeleton-title { height: 30px; margin-bottom: 1rem; width: 40%; }
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
