@@ -86,19 +86,19 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/api.js"></script>
   <script>
-    const hoy = new Date().toISOString().split("T")[0];
-    document.getElementById("inputFecha").value = hoy;
+    document.getElementById("inputFecha").value = "";
 
     if (!estaAutenticado()) { window.location.href = "index.html"; } else { cargarCitas(); }
 
     async function cargarCitas() {
-      const fecha = document.getElementById("inputFecha").value || hoy;
-      document.getElementById("tituloDia").textContent = `Citas del ${fecha}`;
+      const fecha = document.getElementById("inputFecha").value;
+      document.getElementById("tituloDia").textContent = fecha ? `Citas del ${fecha}` : "Todas las citas";
       document.getElementById("cargando").style.display = "block";
       document.getElementById("tablaWrap").style.display = "none";
 
       try {
-        const citas = await apiGet(`/citas?fecha=${fecha}`);
+        const url = fecha ? `/citas?fecha=${fecha}` : `/citas`;
+        const citas = await apiGet(url);
         renderizarTabla(citas);
       } catch (e) {
         document.getElementById("cargando").innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
@@ -112,12 +112,14 @@
       tbody.innerHTML = "";
 
       if (!citas.length) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">Sin citas para esta fecha 🎉</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">Sin citas registradas 🎉</td></tr>`;
         return;
       }
 
       citas.forEach(c => {
-        const hora = new Date(c.fecha_hora).toLocaleTimeString("es-MX", {hour:"2-digit", minute:"2-digit"});
+        const dateObj = new Date(c.fecha_hora);
+        const dia = dateObj.toLocaleDateString("es-MX", { day: '2-digit', month: 'short' });
+        const hora = dateObj.toLocaleTimeString("es-MX", {hour:"2-digit", minute:"2-digit"});
         const tr = document.createElement("tr");
         
         // Colores Bootstrap según estado
@@ -126,9 +128,9 @@
         if (c.estado === 'cancelada') colorClass = "bg-danger text-white";
 
         tr.innerHTML = `
-          <td class="fw-bold">${hora}</td>
-          <td><a href="paciente-detalle.html?id=${c.id}" class="text-primary text-decoration-none fw-bold">#${c.id.substring(0,8)}</a></td>
-          <td class="small text-muted">${c.id_doctor.substring(0,8)}…</td>
+          <td class="fw-bold">${dia} <span class="text-muted fw-normal">${hora}</span></td>
+          <td><a href="paciente-detalle.html?id=${c.id_paciente}" class="text-primary text-decoration-none fw-bold">${c.paciente_nombre || 'Ver'} ${c.paciente_apellidos || ''}</a></td>
+          <td class="small text-muted">${c.doctor_nombre || c.id_doctor.substring(0,8)}</td>
           <td>${c.motivo}</td>
           <td><span class="badge ${colorClass} rounded-pill px-3 py-2 text-capitalize">${c.estado}</span></td>
           <td>

@@ -151,7 +151,7 @@
             <p class="text-primary fw-bold mb-2">🩺 ${h.diagnostico}</p>
             <p class="mb-2"><strong>Tratamiento:</strong> ${h.tratamiento}</p>
             <div class="d-flex flex-wrap gap-2 mb-2">
-              ${h.notas && h.notas.includes('peso_kg:') ? `<span class="badge bg-secondary">⚖️ Registró signos vitales</span>` : ""}
+              ${h.notas && h.notas.includes('[Peso:') ? `<span class="badge bg-secondary">⚖️ Registró signos vitales</span>` : ""}
             </div>
             ${h.notas ? `<div class="bg-light p-3 rounded text-muted fst-italic">💬 ${h.notas}</div>` : ""}
           </div>`).join("");
@@ -170,22 +170,13 @@
       errDiv.classList.add("d-none");
       btn.disabled = true; btn.textContent = "Guardando...";
 
-      // Para ser compatible con el backend actual que guarda el peso y presion en las notas
-      const peso = document.getElementById("cPeso").value;
-      const presion = document.getElementById("cPresion").value;
-      const obs = document.getElementById("cObservaciones").value;
-      
-      let notasAdicionales = obs;
-      if (peso) notasAdicionales += ` [peso_kg: ${peso}]`;
-      if (presion) notasAdicionales += ` [presion: ${presion}]`;
-
       const body = {
         id_paciente: idPaciente,
         diagnostico: document.getElementById("cDiagnostico").value,
         tratamiento: document.getElementById("cTratamiento").value,
-        observaciones: notasAdicionales.trim() || null,
-        peso_kg: peso || null,
-        presion_arterial: presion || null
+        observaciones: document.getElementById("cObservaciones").value || null,
+        peso_kg: document.getElementById("cPeso").value || null,
+        presion_arterial: document.getElementById("cPresion").value || null
       };
 
       try {

@@ -3,80 +3,318 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login – Clínica</title>
-  <!-- Bootstrap 5 CSS -->
+  <title>Acceso – Clínica</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
   <style>
+    /* Fondo con círculos estilo médico moderno */
     body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      background-color: #e6f7f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      position: relative;
     }
-    .login-card {
+    
+    /* Círculos decorativos de fondo */
+    .bg-circle-1 {
+      position: absolute;
+      top: -150px;
+      left: -150px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(142,228,211,0.4) 0%, rgba(230,247,245,0) 70%);
+      border-radius: 50%;
+      z-index: 0;
+    }
+    .bg-circle-2 {
+      position: absolute;
+      bottom: -200px;
+      right: -100px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(142,228,211,0.5) 0%, rgba(230,247,245,0) 70%);
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    /* Animación de entrada de la tarjeta principal */
+    @keyframes slideFadeUp {
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tarjeta principal contenedora */
+    .login-container {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      width: 900px;
+      max-width: 95vw;
+      height: 550px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      animation: slideFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    /* Lado Izquierdo: Formulario */
+    .login-form-side {
+      flex: 1;
+      padding: 3rem 4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .login-header h2 {
+      color: #115e59; /* Verde oscuro */
+      font-weight: 800;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .login-header p {
+      color: #64748b;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Estilos de inputs modernos */
+    .input-group-custom {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .input-group-custom input {
       width: 100%;
-      max-width: 450px;
-      padding: 3rem;
+      padding: 1rem 1rem 1rem 3rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 30px;
+      outline: none;
+      transition: all 0.3s;
+      background-color: #f8fafc;
+    }
+    .input-group-custom input:focus {
+      border-color: #14b8a6;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+    }
+    .input-group-custom svg {
+      position: absolute;
+      top: 50%;
+      left: 1rem;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      width: 20px;
+      height: 20px;
+      transition: color 0.3s;
+    }
+    .input-group-custom input:focus + svg {
+      color: #14b8a6;
+    }
+
+    /* Botón animado y moderno */
+    .btn-login {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+      border: none;
+      border-radius: 30px;
+      color: white;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 1rem;
+    }
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(20, 184, 166, 0.3);
+    }
+    .btn-login:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Lado Derecho: Ilustración / Branding Médico */
+    .login-illustration-side {
+      flex: 1;
+      background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Círculos decorativos dentro del lado derecho */
+    .login-illustration-side::before {
+      content: "";
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 200px;
+      height: 200px;
+      border: 30px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+    .login-illustration-side::after {
+      content: "";
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 300px;
+      height: 300px;
+      border: 40px solid rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+
+    .illustration-icon {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      animation: float 4s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .illustration-text {
+      text-align: center;
+      padding: 0 2rem;
+      z-index: 2;
+    }
+    .illustration-text h3 {
+      font-weight: 800;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    .illustration-text p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    /* Responsividad */
+    @media (max-width: 768px) {
+      .login-container {
+        flex-direction: column;
+        height: auto;
+        width: 100%;
+        margin: 1rem;
+      }
+      .login-illustration-side {
+        display: none; /* Ocultamos la ilustración en móviles para dar espacio al login */
+      }
+      .login-form-side {
+        padding: 2.5rem 2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card login-card text-center">
-    <div class="mb-4">
-      <img src="img/logo.jpg" alt="Logo Clínica" class="rounded-circle shadow-sm" width="100" height="100" style="object-fit:cover">
-    </div>
-    <h2 class="fw-bold mb-4 text-primary">Acceso al Sistema</h2>
-    
-    <div id="errorMsg" class="alert alert-danger d-none" role="alert"></div>
 
-    <form id="formLogin">
-      <div class="mb-3 text-start">
-        <label class="form-label fw-bold">Correo electrónico</label>
-        <input type="email" id="email" class="form-control form-control-lg" required>
+  <!-- Círculos de fondo globales -->
+  <div class="bg-circle-1"></div>
+  <div class="bg-circle-2"></div>
+
+  <!-- Contenedor del Login -->
+  <div class="login-container">
+    
+    <!-- Lado Izquierdo: Formulario -->
+    <div class="login-form-side">
+      <div class="login-header">
+        <h2>Bienvenido</h2>
+        <p>Ingresa a tu portal médico profesional</p>
       </div>
-      <div class="mb-4 text-start">
-        <label class="form-label fw-bold">Contraseña</label>
-        <input type="password" id="password" class="form-control form-control-lg" required>
+
+      <div id="errorMsg" class="alert alert-danger d-none" style="border-radius: 12px; font-size: 0.9rem;"></div>
+
+      <form id="loginForm">
+        <div class="input-group-custom">
+          <input type="email" id="email" placeholder="Correo Electrónico" required autocomplete="email">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+          </svg>
+        </div>
+        
+        <div class="input-group-custom">
+          <input type="password" id="password" placeholder="Contraseña" required autocomplete="current-password">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+          </svg>
+        </div>
+
+        <button type="submit" class="btn-login" id="btnSubmit">
+          Ingresar al Sistema
+        </button>
+      </form>
+    </div>
+
+    <!-- Lado Derecho: Branding Médico -->
+    <div class="login-illustration-side">
+      <div class="illustration-icon">🩺</div>
+      <div class="illustration-text">
+        <h3>Doccite Platform</h3>
+        <p>Gestión inteligente y segura<br>de pacientes e historiales médicos.</p>
       </div>
-      <button type="submit" class="btn btn-primary btn-lg w-100" id="btnSubmit">
-        Iniciar sesión
-      </button>
-    </form>
+    </div>
+
   </div>
 
   <script src="js/firebase-config.js"></script>
   <script src="js/api.js"></script>
   <script>
+    // Si ya tiene sesión, redirigir directo
     if (estaAutenticado()) {
       window.location.href = "dashboard.html";
     }
 
-    const formLogin = document.getElementById("formLogin");
-    const btnSubmit = document.getElementById("btnSubmit");
-    const errorMsg  = document.getElementById("errorMsg");
-
-    formLogin.addEventListener("submit", async (e) => {
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = "Cargando...";
-      errorMsg.classList.add("d-none");
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+      const errDiv = document.getElementById("errorMsg");
+      const btn = document.getElementById("btnSubmit");
+      
+      errDiv.classList.add("d-none");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Validando...`;
 
       try {
-        const respuesta = await apiPost("/auth/login", { email, password });
-        guardarToken(respuesta.token);
-        window.location.href = "dashboard.html";
+        const payload = {
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value
+        };
+
+        // Usamos la función apiPost que ya inyecta URL base y maneja errores
+        const data = await apiPost("/auth/login", payload);
+
+        // Guardar token correctamente usando la función del api.js
+        guardarToken(data.token);
+        
+        // Efecto de éxito
+        btn.innerHTML = `✔️ Acceso Concedido`;
+        btn.style.background = "#059669"; // Verde éxito
+        
+        // Pequeña pausa para ver la animación y redirigir
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 600);
+
       } catch (error) {
-        errorMsg.textContent = error.message;
-        errorMsg.classList.remove("d-none");
-        btnSubmit.disabled = false;
-        btnSubmit.textContent = "Iniciar sesión";
+        errDiv.textContent = "⚠️ " + error.message;
+        errDiv.classList.remove("d-none");
+        btn.disabled = false;
+        btn.innerHTML = "Ingresar al Sistema";
       }
     });
   </script>
 </body>
 </html>
-

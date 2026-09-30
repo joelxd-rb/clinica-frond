@@ -6,31 +6,19 @@ body {
   min-height: 100vh;
 }
 
-/* Marca de agua global */
-body::before {
-  content: "";
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  height: 500px;
-  background-image: url('../img/logo.jpg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: 0.05; /* Muy transparente para que no estorbe */
-  z-index: -1;
-  pointer-events: none;
+/* Estilos generales limpios */
+body {
+  background-color: #f0fdf4; /* Un verde menta muy suave y médico */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
 }
 
 /* Tarjetas más grandes y con sombra suave */
 .card {
   border: none;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  transition: transform 0.2s;
-  background: rgba(255, 255, 255, 0.95); /* Ligeramente transparente para ver la marca de agua */
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+  background: #ffffff;
 }
 
 /* Tablas */
