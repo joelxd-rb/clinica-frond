@@ -106,7 +106,7 @@ async function peticion(endpoint, method = "GET", body = null) {
 
   // Si el servidor retornó un error, lanzar una excepción con el mensaje
   if (!respuesta.ok) {
-    throw new Error(datos.detail || datos.error || "Error en la petición");
+    throw new Error(datos.mensaje || datos.detail || datos.error || "Error en la petición");
   }
 
   return datos;

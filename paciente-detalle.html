@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expediente Médico</title>
+  <title>Expediente – Clínica</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="css/styles.css">
   <style>
     .timeline-item {
       border-left: 3px solid var(--bs-primary);
-      padding-left: 1rem;
+      padding-left: 1.5rem;
       position: relative;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
     .timeline-item::before {
       content: "";
@@ -29,73 +30,90 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark mb-4">
     <div class="container">
-      <a class="navbar-brand" href="#" id="navTitulo">📋 Expediente</a>
+      <a class="navbar-brand" href="#" id="navTitulo"><i class="bi bi-folder2-open"></i> Expediente</a>
       <div class="d-flex align-items-center gap-3">
-        <a href="pacientes.html" class="btn btn-outline-light btn-sm fw-bold">⬅ Volver a Pacientes</a>
-        <button class="btn btn-light btn-sm fw-bold" onclick="cerrarSesion()">Salir</button>
+        <a href="pacientes.html" class="btn btn-outline-light btn-sm fw-bold"><i class="bi bi-arrow-left"></i> Volver a Pacientes</a>
+        <button class="btn btn-light btn-sm fw-bold" onclick="cerrarSesion()"><i class="bi bi-box-arrow-right"></i> Salir</button>
       </div>
     </div>
   </nav>
 
   <main class="container">
     <!-- Ficha demográfica -->
-    <div class="card p-4 mb-4" id="fichaCard">
+    <div class="card p-4 mb-4 border-0 shadow-sm" id="fichaCard">
       <div class="skeleton skeleton-title"></div>
       <div class="skeleton skeleton-row"></div>
     </div>
 
     <!-- Historial médico -->
-    <div class="card p-4">
-      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <h3 class="fw-bold text-primary mb-0">📜 Historial Médico</h3>
-        <button class="btn btn-primary fw-bold" onclick="abrirModalConsulta()">+ Registrar Consulta</button>
+    <div class="card p-4 border-0 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
+        <h3 class="fw-bold text-primary mb-0"><i class="bi bi-journal-medical"></i> Historial Médico</h3>
+        <button class="btn btn-primary fw-bold" onclick="abrirOffcanvas()"><i class="bi bi-file-earmark-plus"></i> Registrar Consulta</button>
       </div>
-      <div id="historialContainer">
+      <div id="historialContainer" class="pt-2">
         <div class="skeleton skeleton-row" style="height:60px"></div>
         <div class="skeleton skeleton-row" style="height:60px"></div>
       </div>
     </div>
   </main>
 
-  <!-- Modal: Registrar Consulta -->
-  <div class="custom-backdrop" id="modalConsulta">
-    <div class="custom-modal card p-4 shadow-lg border-0" style="max-width: 600px; width: 100%;">
-      <h3 class="fw-bold mb-4">🩺 Registrar Consulta</h3>
+  <!-- Offcanvas Panel -->
+  <div class="offcanvas offcanvas-end shadow" tabindex="-1" id="offcanvasConsulta" style="width: 450px;">
+    <div class="offcanvas-header bg-light">
+      <h5 class="offcanvas-title fw-bold"><i class="bi bi-heart-pulse"></i> Registrar Consulta</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
       <div class="alert alert-danger d-none" id="errorConsulta"></div>
       <form id="formConsulta">
-        <div class="row g-3 mb-3">
-          <div class="col-md-6">
-            <label class="form-label fw-bold">Peso (kg)</label>
-            <input type="number" step="0.1" id="cPeso" class="form-control" placeholder="70.5">
+        <h6 class="text-muted mb-3 fw-bold">Signos Vitales</h6>
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <div class="form-floating">
+              <input type="number" step="0.1" id="cPeso" class="form-control" placeholder="70.5">
+              <label for="cPeso">Peso (kg)</label>
+            </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label fw-bold">Presión arterial</label>
-            <input type="text" id="cPresion" class="form-control" placeholder="120/80">
+          <div class="col-6">
+            <div class="form-floating">
+              <input type="text" id="cPresion" class="form-control" placeholder="120/80">
+              <label for="cPresion">Presión Art.</label>
+            </div>
           </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Diagnóstico *</label>
-          <textarea id="cDiagnostico" class="form-control" required rows="2" placeholder="Describe el diagnóstico..."></textarea>
+        
+        <h6 class="text-muted mb-3 fw-bold mt-4">Detalles Médicos</h6>
+        <div class="form-floating mb-3">
+          <textarea id="cDiagnostico" class="form-control" required style="height: 80px" placeholder="Diagnóstico"></textarea>
+          <label for="cDiagnostico">Diagnóstico *</label>
         </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Tratamiento *</label>
-          <textarea id="cTratamiento" class="form-control" required rows="2" placeholder="Medicamentos, indicaciones..."></textarea>
+        <div class="form-floating mb-3">
+          <textarea id="cTratamiento" class="form-control" required style="height: 80px" placeholder="Tratamiento"></textarea>
+          <label for="cTratamiento">Tratamiento *</label>
         </div>
-        <div class="mb-4">
-          <label class="form-label fw-bold">Observaciones / Notas adicionales</label>
-          <textarea id="cObservaciones" class="form-control" rows="2" placeholder="(Opcional)"></textarea>
+        <div class="form-floating mb-4">
+          <textarea id="cObservaciones" class="form-control" style="height: 80px" placeholder="Observaciones"></textarea>
+          <label for="cObservaciones">Observaciones / Notas</label>
         </div>
-        <div class="d-flex gap-2">
-          <button type="button" class="btn btn-secondary w-50 fw-bold" onclick="cerrarModal()">Cancelar</button>
+        
+        <div class="d-flex gap-2 pt-3 border-top">
+          <button type="button" class="btn btn-outline-secondary w-50 fw-bold" data-bs-dismiss="offcanvas">Cancelar</button>
           <button type="submit" class="btn btn-primary w-50 fw-bold" id="btnConsulta">Guardar Consulta</button>
         </div>
       </form>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/api.js"></script>
   <script>
+    let consultaOffcanvas;
+    document.addEventListener("DOMContentLoaded", () => {
+      consultaOffcanvas = new bootstrap.Offcanvas(document.getElementById('offcanvasConsulta'));
+    });
+
     const params = new URLSearchParams(window.location.search);
     const idPaciente = params.get("id");
 
@@ -106,27 +124,27 @@
     async function cargarPaciente() {
       try {
         const p = await apiGet(`/pacientes/${idPaciente}`);
-        document.getElementById("navTitulo").textContent = `📋 ${p.nombre} ${p.apellidos}`;
+        document.getElementById("navTitulo").innerHTML = `<i class="bi bi-folder2-open"></i> Expediente de ${p.nombre}`;
         document.getElementById("fichaCard").innerHTML = `
           <div class="mb-4 border-bottom pb-3">
-            <h2 class="fw-bold mb-1">${p.nombre} ${p.apellidos}</h2>
+            <h2 class="fw-bold mb-1"><i class="bi bi-person-fill text-muted"></i> ${p.nombre} ${p.apellidos}</h2>
             <p class="text-muted small mb-0">ID: ${p.id}</p>
           </div>
           <div class="row g-4">
             <div class="col-md-3 col-6">
-              <label class="text-muted fw-bold small text-uppercase">Fecha de Nacimiento</label>
+              <label class="text-muted fw-bold small text-uppercase"><i class="bi bi-calendar3"></i> F. Nacimiento</label>
               <p class="mb-0 fs-5">${p.fecha_nacimiento || "—"}</p>
             </div>
             <div class="col-md-3 col-6">
-              <label class="text-muted fw-bold small text-uppercase">Sexo</label>
+              <label class="text-muted fw-bold small text-uppercase"><i class="bi bi-gender-ambiguous"></i> Sexo</label>
               <p class="mb-0 fs-5">${p.sexo || "—"}</p>
             </div>
             <div class="col-md-3 col-6">
-              <label class="text-muted fw-bold small text-uppercase">Teléfono</label>
+              <label class="text-muted fw-bold small text-uppercase"><i class="bi bi-telephone"></i> Teléfono</label>
               <p class="mb-0 fs-5">${p.telefono || "—"}</p>
             </div>
             <div class="col-md-3 col-6">
-              <label class="text-muted fw-bold small text-uppercase">Dirección</label>
+              <label class="text-muted fw-bold small text-uppercase"><i class="bi bi-geo-alt"></i> Dirección</label>
               <p class="mb-0 fs-5">${p.direccion || "—"}</p>
             </div>
           </div>`;
@@ -141,34 +159,39 @@
         const historial = await apiGet(`/historial/paciente/${idPaciente}`);
 
         if (!historial.length) {
-          container.innerHTML = `<div class="text-center text-muted py-5">Sin registros médicos aún</div>`;
+          container.innerHTML = `<div class="text-center text-muted py-5"><i class="bi bi-file-earmark-x fs-1 d-block mb-2"></i> Sin registros médicos aún</div>`;
           return;
         }
 
         container.innerHTML = historial.map(h => `
           <div class="timeline-item">
-            <h5 class="fw-bold mb-1">📅 ${new Date(h.fecha_consulta).toLocaleString("es-MX", {dateStyle:"long", timeStyle:"short"})}</h5>
-            <p class="text-primary fw-bold mb-2">🩺 ${h.diagnostico}</p>
-            <p class="mb-2"><strong>Tratamiento:</strong> ${h.tratamiento}</p>
-            <div class="d-flex flex-wrap gap-2 mb-2">
-              ${h.notas && h.notas.includes('[Peso:') ? `<span class="badge bg-secondary">⚖️ Registró signos vitales</span>` : ""}
+            <h5 class="fw-bold mb-2"><i class="bi bi-clock-history text-muted"></i> ${new Date(h.fecha_consulta).toLocaleString("es-MX", {dateStyle:"long", timeStyle:"short"})}</h5>
+            <div class="p-3 bg-light rounded border">
+              <p class="text-primary fw-bold mb-2"><i class="bi bi-clipboard2-pulse"></i> ${h.diagnostico}</p>
+              <p class="mb-2"><strong class="text-muted">Tratamiento:</strong> ${h.tratamiento}</p>
+              <div class="d-flex flex-wrap gap-2 mb-2">
+                ${h.notas && h.notas.includes('[Peso:') ? `<span class="badge bg-secondary"><i class="bi bi-activity"></i> Registró signos vitales</span>` : ""}
+              </div>
+              ${h.notas ? `<div class="text-muted fst-italic small border-top pt-2 mt-2"><i class="bi bi-chat-left-text"></i> ${h.notas}</div>` : ""}
             </div>
-            ${h.notas ? `<div class="bg-light p-3 rounded text-muted fst-italic">💬 ${h.notas}</div>` : ""}
           </div>`).join("");
       } catch (e) {
         container.innerHTML = `<div class="alert alert-danger">Error al cargar historial: ${e.message}</div>`;
       }
     }
 
-    function abrirModalConsulta() { document.getElementById("modalConsulta").classList.add("activo"); }
-    function cerrarModal() { document.getElementById("modalConsulta").classList.remove("activo"); }
+    function abrirOffcanvas() { 
+      document.getElementById("formConsulta").reset();
+      document.getElementById("errorConsulta").classList.add("d-none");
+      consultaOffcanvas.show(); 
+    }
 
     document.getElementById("formConsulta").addEventListener("submit", async (e) => {
       e.preventDefault();
       const errDiv = document.getElementById("errorConsulta");
       const btn = document.getElementById("btnConsulta");
       errDiv.classList.add("d-none");
-      btn.disabled = true; btn.textContent = "Guardando...";
+      btn.disabled = true; btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
 
       const body = {
         id_paciente: idPaciente,
@@ -181,7 +204,7 @@
 
       try {
         await apiPost("/historial", body);
-        cerrarModal();
+        consultaOffcanvas.hide();
         document.getElementById("formConsulta").reset();
         cargarHistorial();
       } catch (err) {
@@ -194,4 +217,3 @@
   </script>
 </body>
 </html>
-
