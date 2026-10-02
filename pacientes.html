@@ -158,10 +158,11 @@
       }
 
       pacientes.forEach(p => {
+        const fechaNac = p.fecha_nacimiento ? p.fecha_nacimiento.split('T')[0] : "—";
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="fw-bold"><a href="paciente-detalle.html?id=${p.id}" class="text-primary text-decoration-none"><i class="bi bi-person-fill text-muted me-1"></i> ${p.nombre} ${p.apellidos}</a></td>
-          <td><i class="bi bi-calendar3 text-muted me-1"></i> ${p.fecha_nacimiento || "—"}</td>
+          <td><i class="bi bi-calendar3 text-muted me-1"></i> ${fechaNac}</td>
           <td><span class="badge bg-light text-dark border">${p.sexo || "—"}</span></td>
           <td><i class="bi bi-telephone text-muted me-1"></i> ${p.telefono || "—"}</td>
           <td class="text-end">
@@ -194,7 +195,7 @@
       document.getElementById("modalTitulo").innerHTML = `<i class="bi bi-pencil-square"></i> Editar Paciente`;
       document.getElementById("fNombre").value = p.nombre;
       document.getElementById("fApellidos").value = p.apellidos;
-      document.getElementById("fFechaNac").value = p.fecha_nacimiento;
+      document.getElementById("fFechaNac").value = p.fecha_nacimiento ? p.fecha_nacimiento.split('T')[0] : "";
       document.getElementById("fSexo").value = p.sexo || "";
       document.getElementById("fTelefono").value = p.telefono || "";
       document.getElementById("fDireccion").value = p.direccion || "";
